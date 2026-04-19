@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Vault | Pro Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    
+    <div class="container">
+        <header class="hero-section">
+            <h1>Secure <span>Vault</span></h1>
+            <p>Professional Digital Asset Management System</p>
+        </header>
+
+        <div class="portal-grid">
+            <div class="glass-card admin-card">
+                <div class="card-icon">🔐</div>
+                <h2>Admin Control</h2>
+                <p>Upoad PDFs, Links and manage resources. Authorized access only.</p>
+                <button class="btn btn-red" onclick="loginWithGoogle('admin')">Admin Login</button>
+            </div>
+
+            <div class="glass-card viewer-card">
+                <div class="card-icon">👥</div>
+                <h2>Viewer Access</h2>
+                <p>Login to securely view and download documents shared with you.</p>
+                <button class="btn btn-blue" onclick="loginWithGoogle('viewer')">Viewer Login</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
