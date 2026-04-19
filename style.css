@@ -100,3 +100,80 @@ body {
     filter: brightness(1.2);
     box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
 }
+
+
+
+/* --- Admin & Viewer Dashboard Styles --- */
+
+.admin-page, .viewer-page {
+    display: block;
+    overflow-y: auto;
+    background: #050811;
+}
+
+.admin-container, .viewer-container {
+    padding: 40px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.admin-header, .viewer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 20px;
+}
+
+.upload-grid, .display-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.upload-card, .resource-card {
+    background: rgba(255,255,255,0.03);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+}
+
+.drop-zone {
+    border: 2px dashed #0ea5e9;
+    padding: 40px;
+    text-align: center;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    background: rgba(14, 165, 233, 0.05);
+}
+
+.upload-card input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid #333;
+    color: #fff;
+    outline: none;
+}
+
+.logout-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.status-bar {
+    margin-top: 20px;
+    color: #0ea5e9;
+    font-weight: 600;
+    text-align: center;
+}
