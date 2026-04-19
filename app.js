@@ -1,50 +1,34 @@
-/ Firebase SDKs ko link kar rahe hain (Latest Version)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+// Supabase Library Import
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-// 1. [IMPORTANT] Yahan apna Firebase Config wala poora box paste karein
-const firebaseConfig = {
-  apiKey: "AIzaSyCTgT37AvGJ6amhxR59DWfyReTh5pHzcdQ",
-  authDomain: "gs-vault.firebaseapp.com",
-  projectId: "gs-vault",
-  storageBucket: "gs-vault.firebasestorage.app",
-  messagingSenderId: "966759040569",
-  appId: "1:966759040569:web:dd79917e80786abbd1efe8",
-  measurementId: "G-N7N61D3PMB"
-};
+// YAHAN APNI SUPABASE DETAILS DAALO
+const SUPABASE_URL = 'https://your-project-url.supabase.co'
+const SUPABASE_KEY = 'your-anon-key'
+const ADMIN_EMAIL = 'aapki_email@gmail.com'
 
-// 2. [IMPORTANT] Yahan apni Admin Gmail ID likhein
-const ADMIN_EMAIL = "gyanendsingh24@gmail.com"; 
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+// Google Login Function
+window.loginWithGoogle = async (roleType) => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            redirectTo: window.location.origin // Aapki GitHub link par wapas layega
+        }
+    })
 
-// Login Function jo buttons par kaam karega
-window.loginWithGoogle = function(roleType) {
-    signInWithPopup(auth, provider)
-        .then((result) => {
-            const user = result.user;
-            console.log("Logged in user:", user.email);
+    if (error) alert("Login Error: " + error.message)
+}
 
-            if (roleType === 'admin') {
-                // Check agar login karne wala Admin hi hai
-                if (user.email === ADMIN_EMAIL) {
-                    alert("Access Granted! Welcome Boss.");
-                    window.location.href = "admin.html"; // Admin Dashboard par bhejo
-                } else {
-                    alert("Unauthorized! Aap Admin nahi hain.");
-                    signOut(auth); // Galat bande ko log out kar do
-                }
-            } else {
-                // Viewer login logic
-                alert("Welcome " + user.displayName + "! Viewer Portal khul raha hai.");
-                window.location.href = "viewer.html"; // Viewer Dashboard par bhejo
-            }
-        })
-        .catch((error) => {
-            console.error("Login Failed:", error);
-            alert("Login fail ho gaya. Domain authorize kiya kya?");
-        });
-};
+// Check User Session (Ye check karega ki kaun login hai)
+async function checkUser() {
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (user) {
+        if (user.email === ADMIN_EMAIL) {
+            window.location.href = "admin.html"
+        } else {
+            window.location.href = "viewer.html"
+        }
+    }
+  }
