@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Secure Vault</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body class="admin-page">
+    <div class="admin-container">
+        <header class="admin-header">
+            <h2>Admin <span>Dashboard</span></h2>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </header>
+
+        <div class="upload-grid">
+            <div class="upload-card">
+                <h3>Upload Files (PDF, Images, etc.)</h3>
+                <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
+                    <span>Click to Select File</span>
+                    <input type="file" id="fileInput" hidden>
+                </div>
+                <button class="btn btn-blue" id="uploadFileBtn">Upload to Vault</button>
+            </div>
+
+            <div class="upload-card">
+                <h3>Add Important Links</h3>
+                <input type="text" id="linkTitle" placeholder="Link ka Naam (e.g. My Notes)">
+                <input type="text" id="linkUrl" placeholder="URL Paste Karein (https://...)">
+                <button class="btn btn-red" id="uploadLinkBtn">Add Link</button>
+            </div>
+        </div>
+
+        <div class="status-bar" id="statusMsg"></div>
+    </div>
+
+    <script type="module" src="admin-logic.js"></script>
+</body>
+</html>
