@@ -2,39 +2,39 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const SUPABASE_URL = 'https://tystqlfkhuigbfceuthu.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5c3RxbGZraHVpZ2JmY2V1dGh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTQ4NTQsImV4cCI6MjA5MjE5MDg1NH0.p6o0zviRFrLOQb4OkRpKq7GTq_2TNngr0_ld1sLyvFQ'
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+const BUCKET_NAME = 'aapke_bucket_ka_naam'; // <--- Yahan wahi naam likho jo admin-logic mein likha tha
 
-// Files ko fetch karne ka function
-async function loadResources() {
-    const list = document.getElementById('resourceList');
-    const loader = document.getElementById('loader');
-
-    const { data, error } = await supabase
-        .from('resources')
-        .select('*')
-        .order('created_at', { ascending: false });
+async function loadFiles() {
+    const fileListDiv = document.getElementById('file-list');
+    
+    // Supabase se files ki list mangwana
+    const { data, error } = await supabase.storage.from(BUCKET_NAME).list();
 
     if (error) {
-        console.error(error);
-    } else {
-        loader.style.display = "none";
-        list.innerHTML = "";
-        data.forEach(item => {
-            const card = document.createElement('div');
-            card.className = "resource-card";
-            card.innerHTML = `
-                <h3>${item.name}</h3>
-                <p>Type: ${item.type.toUpperCase()}</p>
-                <a href="${item.url}" target="_blank" class="btn btn-blue">Open / Download</a>
-            `;
-            list.appendChild(card);
-        });
+        fileListDiv.innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
+        return;
     }
+
+    if (data.length === 0) {
+        fileListDiv.innerHTML = "<p>Koi files nahi mili.</p>";
+        return;
+    }
+
+    // Files ko screen par dikhana
+    fileListDiv.innerHTML = ""; // Loading text hatane ke liye
+    data.forEach(file => {
+        const fileUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${file.name}`;
+        const fileElement = document.createElement('div');
+        fileElement.innerHTML = `
+            <div style="margin: 10px; border: 1px solid #ccc; padding: 10px;">
+                <p>${file.name}</p>
+                <a href="${fileUrl}" target="_blank">Download/View</a>
+            </div>
+        `;
+        fileListDiv.appendChild(fileElement);
+    });
 }
 
-window.logout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "index.html";
-};
-
-loadResources();
+loadFiles();
