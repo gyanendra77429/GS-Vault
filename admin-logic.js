@@ -16,14 +16,14 @@ document.getElementById('uploadFileBtn').onclick = async () => {
     // 1. Supabase Storage mein file bhejna
     const fileName = Date.now() + "_" + file.name;
     const { data, error } = await supabase.storage
-        .from('vault')
+        .from('Vaults')
         .upload(fileName, file);
 
     if (error) {
         alert("Upload Error: " + error.message);
     } else {
         // 2. Public URL nikalna
-        const { data: urlData } = supabase.storage.from('vault').getPublicUrl(fileName);
+        const { data: urlData } = supabase.storage.from('Vaults').getPublicUrl(fileName);
         
         // 3. Database mein entry save karna
         await supabase.from('resources').insert([
