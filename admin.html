@@ -6,14 +6,14 @@
     <title>Admin Dashboard - GS Vault</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .container { max-width: 800px; margin: auto; padding: 20px; }
-        .upload-card { background: #222; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px dashed #444; }
+        .container { max-width: 800px; margin: auto; padding: 20px; font-family: sans-serif; }
+        .upload-card { background: #222; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #444; }
+        .link-card { border-color: #007bff; }
         .file-list-item { background: #1a1a1a; padding: 15px; margin: 10px 0; border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border: 1px solid #333; }
-        input[type="file"] { margin-bottom: 10px; color: white; }
-        .btn { padding: 8px 15px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold; }
+        input { width: 95%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #444; background: #000; color: white; }
+        .btn { padding: 10px 15px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold; }
         .btn-upload { background: #28a745; color: white; }
-        .btn-rename { background: #ffa500; color: black; margin-right: 5px; }
-        .btn-delete { background: #ff4d4d; color: white; }
+        .btn-link { background: #007bff; color: white; }
         .btn-logout { background: #555; color: white; margin-top: 20px; }
     </style>
 </head>
@@ -22,33 +22,25 @@
         <h1>Admin Dashboard</h1>
         
         <div class="upload-card">
-            <h3>Upload New File</h3>
+            <h3>📂 Upload File (PDF/Image)</h3>
             <input type="file" id="fileInput">
-            <button onclick="uploadFile()" class="btn btn-upload">Upload to Vault</button>
+            <button onclick="uploadFile()" class="btn btn-upload">Upload to Storage</button>
         </div>
 
-        <hr style="border: 0.5px solid #333;">
-
-        <h3>Manage Files (Rename/Delete)</h3>
-        <div id="admin-file-list">
-            <p style="color: gray;">Loading your files...</p>
+        <div class="upload-card link-card">
+            <h3>🔗 Save Important Link/URL</h3>
+            <input type="text" id="linkTitle" placeholder="Link ka naam (e.g. My Drive)">
+            <input type="text" id="linkURL" placeholder="Paste URL here (https://...)">
+            <button onclick="addLink()" class="btn btn-link">Save Link to Database</button>
         </div>
 
-        <div class="upload-card" style="background: #111; padding: 20px; border: 1px solid #007bff; border-radius: 12px; margin-top: 20px;">
-    <h3 style="color: #007bff;">Add Important Link/URL</h3>
-    <input type="text" id="linkTitle" placeholder="Link Name (e.g. My Notes)" style="width: 95%; padding: 10px; margin-bottom: 10px; border-radius: 5px; background: #222; color: white; border: 1px solid #444;">
-    <input type="text" id="linkURL" placeholder="Paste URL (https://...)" style="width: 95%; padding: 10px; margin-bottom: 10px; border-radius: 5px; background: #222; color: white; border: 1px solid #444;">
-    <button onclick="addLink()" class="btn" style="background: #007bff; color: white; padding: 10px 20px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; width: 100%;">Save Link</button>
-</div>
+        <hr style="border: 0.5px solid #333; margin: 30px 0;">
 
-<hr style="margin: 30px 0; border: 0.5px solid #333;">
+        <h3>📝 Manage Files & Links</h3>
+        <div id="admin-file-list"></div>
+        <div id="admin-links-list"></div>
 
-<h3 style="color: white;">Saved Links</h3>
-<div id="admin-links-list">
-    <p style="color: gray;">Loading links...</p>
-</div>
-
-        <button onclick="logout()" class="btn btn-logout">Logout & Back to Home</button>
+        <button onclick="logout()" class="btn btn-logout">Logout</button>
     </div>
 
     <script type="module" src="admin-logic.js"></script>
