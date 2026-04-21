@@ -5,26 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - GS Vault</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        .upload-card { background: #222; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px dashed #444; }
+        .file-list-item { background: #1a1a1a; padding: 15px; margin: 10px 0; border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border: 1px solid #333; }
+        input[type="file"] { margin-bottom: 10px; color: white; }
+        .btn { padding: 8px 15px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold; }
+        .btn-upload { background: #28a745; color: white; }
+        .btn-rename { background: #ffa500; color: black; margin-right: 5px; }
+        .btn-delete { background: #ff4d4d; color: white; }
+        .btn-logout { background: #555; color: white; margin-top: 20px; }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Admin Dashboard</h1>
         
-        <div class="upload-section">
+        <div class="upload-card">
+            <h3>Upload New File</h3>
             <input type="file" id="fileInput">
-            <button onclick="uploadFile()">Upload File</button>
+            <button onclick="uploadFile()" class="btn btn-upload">Upload to Vault</button>
         </div>
 
-        <hr>
+        <hr style="border: 0.5px solid #333;">
 
-        <h3>Manage Uploaded Files</h3>
+        <h3>Manage Files (Rename/Delete)</h3>
         <div id="admin-file-list">
-            <p>Loading files...</p>
+            <p style="color: gray;">Loading your files...</p>
         </div>
 
-        <hr>
-        
-        <button onclick="logout()" class="logout-btn">Logout & Back to Home</button>
+        <button onclick="logout()" class="btn btn-logout">Logout & Back to Home</button>
     </div>
 
     <script type="module" src="admin-logic.js"></script>
