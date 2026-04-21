@@ -6,75 +6,61 @@ const BUCKET_NAME = 'Vaults';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-// 1. File Rename Function
+// --- RENAME FUNCTION ---
 window.renameFile = async (oldName) => {
-    const newName = prompt("Naya naam likhein (extension ke saath, e.g. photo.jpg):", oldName);
-    
+    const newName = prompt("Naya naam extension ke sath (e.g. notes.pdf):", oldName);
     if (!newName || newName === oldName) return;
-
-    // Logic: Copy then Delete
-    const { data, error: copyError } = await supabase.storage
-        .from(BUCKET_NAME)
-        .move(oldName, newName); // .move() purani file ko rename kar deta hai
-
-    if (copyError) {
-        alert("Rename Error: " + copyError.message);
-    } else {
-        alert("File Rename Ho Gayi!");
-        loadAdminFiles();
-    }
+    const { error } = await supabase.storage.from(BUCKET_NAME).move(oldName, newName);
+    if (error) alert("Error: " + error.message);
+    else loadAdminFiles();
 }
 
-// 2. File Delete Function
+// --- DELETE FUNCTION ---
 window.deleteFile = async (fileName) => {
-    const confirmDelete = confirm(`Do You want To Delete "${fileName}"File?`);
-    if (!confirmDelete) return;
-
+    if (!confirm("Delete karein?")) return;
     const { error } = await supabase.storage.from(BUCKET_NAME).remove([fileName]);
     if (error) alert("Error: " + error.message);
-    else {
-        alert("File Deleted!");
-        loadAdminFiles();
-    }
+    else loadAdminFiles();
 }
 
-// 3. File Upload Function
+// --- UPLOAD FUNCTION ---
 window.uploadFile = async () => {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
-    if (!file) return alert("Pehle file select karein!");
-
+    if (!file) return alert("File select karein!");
     const fileName = `${Date.now()}_${file.name}`;
     const { error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, file);
-
-    if (error) alert("Upload Error: " + error.message);
-    else {
-        alert("Upload Success!");
-        loadAdminFiles();
-    }
+    if (error) alert("Error: " + error.message);
+    else { alert("Uploaded!"); loadAdminFiles(); }
 }
 
-// 4. Load Files with Rename Button
+// --- LOAD FILES WITH LINKS (NEW LOGIC) ---
 async function loadAdminFiles() {
     const listDiv = document.getElementById('admin-file-list');
     if(!listDiv) return;
 
     const { data, error } = await supabase.storage.from(BUCKET_NAME).list();
-    if (error) {
-        listDiv.innerHTML = "Error: " + error.message;
-        return;
-    }
+    if (error) { listDiv.innerHTML = "Error: " + error.message; return; }
 
-    listDiv.innerHTML = "";
+    listDiv.innerHTML = ""; 
     data.forEach(file => {
+        // Har file ka public URL nikaalna
+        const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(file.name);
+        const publicUrl = urlData.publicUrl;
+
         const fileElement = document.createElement('div');
-        fileElement.style = "background: #1a1a1a; padding: 15px; margin: 10px 0; border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border: 1px solid #333;";
+        fileElement.className = "file-list-item"; // CSS class use karega
+        fileElement.style = "background: #1a1a1a; padding: 15px; margin: 10px 0; border-radius: 8px; border: 1px solid #333;";
         
         fileElement.innerHTML = `
-            <span style="color: white; margin-bottom: 10px; width: 100%; word-break: break-all;">${file.name}</span>
+            <div style="margin-bottom: 10px;">
+                <strong style="color: white; display: block;">${file.name}</strong>
+                <a href="${publicUrl}" target="_blank" style="color: #00d4ff; font-size: 12px; word-break: break-all;">${publicUrl}</a>
+            </div>
             <div style="display: flex; gap: 10px;">
-                <button onclick="renameFile('${file.name}')" style="background: #ffa500; color: black; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">Rename</button>
-                <button onclick="deleteFile('${file.name}')" style="background: #ff4d4d; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">Delete</button>
+                <button onclick="navigator.clipboard.writeText('${publicUrl}'); alert('Link Copied!')" style="background: #eee; color: black; padding: 5px 10px; border-radius: 4px; cursor: pointer; border:none; font-size: 12px;">Copy Link</button>
+                <button onclick="renameFile('${file.name}')" style="background: #ffa500; color: black; padding: 5px 10px; border-radius: 4px; cursor: pointer; border:none; font-size: 12px;">Rename</button>
+                <button onclick="deleteFile('${file.name}')" style="background: #ff4d4d; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; border:none; font-size: 12px;">Delete</button>
             </div>
         `;
         listDiv.appendChild(fileElement);
