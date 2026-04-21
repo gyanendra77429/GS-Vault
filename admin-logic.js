@@ -40,7 +40,7 @@ window.addLink = async () => {
     const url = document.getElementById('linkURL').value;
     if (!title || !url) return alert("Title aur URL dono bhariye!");
 
-    const { error } = await supabase.from('important_links').insert([{ title, url }]);
+    const { error } = await supabase.from('links').insert([{ title, url }]);
     if (error) alert("Error: " + error.message);
     else {
         alert("Link Saved!");
@@ -52,7 +52,7 @@ window.addLink = async () => {
 
 window.deleteLink = async (id) => {
     if (!confirm("Link delete karein?")) return;
-    const { error } = await supabase.from('important_links').delete().eq('id', id);
+    const { error } = await supabase.from('links').delete().eq('id', id);
     if (error) alert(error.message);
     else loadLinks();
 }
@@ -82,7 +82,7 @@ async function loadAdminFiles() {
 
 async function loadLinks() {
     const linksDiv = document.getElementById('admin-links-list');
-    const { data, error } = await supabase.from('important_links').select('*');
+    const { data, error } = await supabase.from('links').select('*');
     if (error) return;
 
     linksDiv.innerHTML = "<h4>Saved URLs:</h4>";
