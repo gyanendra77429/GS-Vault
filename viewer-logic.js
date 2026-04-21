@@ -4,7 +4,7 @@ const SUPABASE_URL = 'https://tystqlfkhuigbfceuthu.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5c3RxbGZraHVpZ2JmY2V1dGh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTQ4NTQsImV4cCI6MjA5MjE5MDg1NH0.p6o0zviRFrLOQb4OkRpKq7GTq_2TNngr0_ld1sLyvFQ'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-const BUCKET_NAME = 'VaultsVaults'; // <--- Yahan wahi naam likho jo admin-logic mein likha tha
+const BUCKET_NAME = 'Vaults'; // <--- Yahan wahi naam likho jo admin-logic mein likha tha
 
 async function loadFiles() {
     const fileListDiv = document.getElementById('file-list');
