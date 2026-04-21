@@ -38,3 +38,19 @@ async function loadFiles() {
 }
 
 loadFiles();
+
+// Logout function jo button dabane par chalega
+window.logout = async () => {
+    // 1. Supabase ko bolo ki session khatam kare
+    const { error } = await supabase.auth.signOut();
+    
+    if (error) {
+        alert("Logout fail ho gaya: " + error.message);
+    } else {
+        // 2. Local storage se purana data saaf karo
+        localStorage.clear();
+        
+        // 3. Ab wapas home page par bhej do
+        window.location.href = 'index.html';
+    }
+}
