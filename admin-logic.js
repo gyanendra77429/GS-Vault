@@ -6,64 +6,94 @@ const BUCKET_NAME = 'Vaults';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-// --- RENAME FUNCTION ---
-window.renameFile = async (oldName) => {
-    const newName = prompt("Naya naam extension ke sath (e.g. notes.pdf):", oldName);
-    if (!newName || newName === oldName) return;
-    const { error } = await supabase.storage.from(BUCKET_NAME).move(oldName, newName);
-    if (error) alert("Error: " + error.message);
-    else loadAdminFiles();
-}
+// ================= SYTEM FUNCTIONS =================
 
-// --- DELETE FUNCTION ---
-window.deleteFile = async (fileName) => {
-    if (!confirm("Delete karein?")) return;
-    const { error } = await supabase.storage.from(BUCKET_NAME).remove([fileName]);
-    if (error) alert("Error: " + error.message);
-    else loadAdminFiles();
-}
-
-// --- UPLOAD FUNCTION ---
+// 1. FILE UPLOAD & RENAME LOGIC
 window.uploadFile = async () => {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
-    if (!file) return alert("File select karein!");
+    if (!file) return alert("Pehle file select karein!");
     const fileName = `${Date.now()}_${file.name}`;
     const { error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, file);
     if (error) alert("Error: " + error.message);
-    else { alert("Uploaded!"); loadAdminFiles(); }
+    else { alert("File Uploaded!"); loadAdminFiles(); }
 }
 
-// --- LOAD FILES WITH LINKS (NEW LOGIC) ---
+window.renameFile = async (oldName) => {
+    const newName = prompt("Naya naam (with extension):", oldName);
+    if (!newName || newName === oldName) return;
+    const { error } = await supabase.storage.from(BUCKET_NAME).move(oldName, newName);
+    if (error) alert(error.message);
+    else loadAdminFiles();
+}
+
+window.deleteFile = async (fileName) => {
+    if (!confirm("File delete karein?")) return;
+    const { error } = await supabase.storage.from(BUCKET_NAME).remove([fileName]);
+    if (error) alert(error.message);
+    else loadAdminFiles();
+}
+
+// 2. DATABASE LINKS LOGIC
+window.addLink = async () => {
+    const title = document.getElementById('linkTitle').value;
+    const url = document.getElementById('linkURL').value;
+    if (!title || !url) return alert("Title aur URL dono bhariye!");
+
+    const { error } = await supabase.from('important_links').insert([{ title, url }]);
+    if (error) alert("Error: " + error.message);
+    else {
+        alert("Link Saved!");
+        document.getElementById('linkTitle').value = "";
+        document.getElementById('linkURL').value = "";
+        loadLinks();
+    }
+}
+
+window.deleteLink = async (id) => {
+    if (!confirm("Link delete karein?")) return;
+    const { error } = await supabase.from('important_links').delete().eq('id', id);
+    if (error) alert(error.message);
+    else loadLinks();
+}
+
+// ================= DISPLAY FUNCTIONS =================
+
 async function loadAdminFiles() {
     const listDiv = document.getElementById('admin-file-list');
-    if(!listDiv) return;
-
     const { data, error } = await supabase.storage.from(BUCKET_NAME).list();
-    if (error) { listDiv.innerHTML = "Error: " + error.message; return; }
+    if (error) return;
 
-    listDiv.innerHTML = ""; 
+    listDiv.innerHTML = "<h4>Files in Storage:</h4>";
     data.forEach(file => {
-        // Har file ka public URL nikaalna
         const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(file.name);
-        const publicUrl = urlData.publicUrl;
+        const el = document.createElement('div');
+        el.className = "file-list-item";
+        el.innerHTML = `
+            <div><strong style="color:white">${file.name}</strong><br><small style="color:gray">${urlData.publicUrl}</small></div>
+            <div>
+                <button onclick="navigator.clipboard.writeText('${urlData.publicUrl}');alert('Link Copied!')" style="padding:5px; font-size:10px">Copy</button>
+                <button onclick="renameFile('${file.name}')" style="padding:5px; font-size:10px; background:orange">Rename</button>
+                <button onclick="deleteFile('${file.name}')" style="padding:5px; font-size:10px; background:red; color:white">X</button>
+            </div>`;
+        listDiv.appendChild(el);
+    });
+}
 
-        const fileElement = document.createElement('div');
-        fileElement.className = "file-list-item"; // CSS class use karega
-        fileElement.style = "background: #1a1a1a; padding: 15px; margin: 10px 0; border-radius: 8px; border: 1px solid #333;";
-        
-        fileElement.innerHTML = `
-            <div style="margin-bottom: 10px;">
-                <strong style="color: white; display: block;">${file.name}</strong>
-                <a href="${publicUrl}" target="_blank" style="color: #00d4ff; font-size: 12px; word-break: break-all;">${publicUrl}</a>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="navigator.clipboard.writeText('${publicUrl}'); alert('Link Copied!')" style="background: #eee; color: black; padding: 5px 10px; border-radius: 4px; cursor: pointer; border:none; font-size: 12px;">Copy Link</button>
-                <button onclick="renameFile('${file.name}')" style="background: #ffa500; color: black; padding: 5px 10px; border-radius: 4px; cursor: pointer; border:none; font-size: 12px;">Rename</button>
-                <button onclick="deleteFile('${file.name}')" style="background: #ff4d4d; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; border:none; font-size: 12px;">Delete</button>
-            </div>
-        `;
-        listDiv.appendChild(fileElement);
+async function loadLinks() {
+    const linksDiv = document.getElementById('admin-links-list');
+    const { data, error } = await supabase.from('important_links').select('*');
+    if (error) return;
+
+    linksDiv.innerHTML = "<h4>Saved URLs:</h4>";
+    data.forEach(item => {
+        const el = document.createElement('div');
+        el.className = "file-list-item";
+        el.style.borderLeft = "4px solid #007bff";
+        el.innerHTML = `
+            <div><strong style="color:white">${item.title}</strong><br><a href="${item.url}" target="_blank" style="color:#00d4ff; font-size:12px">${item.url}</a></div>
+            <button onclick="deleteLink(${item.id})" style="background:red; color:white; border:none; padding:5px 10px; border-radius:4px">Delete</button>`;
+        linksDiv.appendChild(el);
     });
 }
 
@@ -73,4 +103,6 @@ window.logout = async () => {
     window.location.href = 'index.html';
 }
 
+// Initial Load
 loadAdminFiles();
+loadLinks();
